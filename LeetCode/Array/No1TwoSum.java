@@ -93,6 +93,7 @@ package array;
  *   @see <a href="https://leetcode.com/problems/two-sum/">leetcode </a>
  *   @see <a href="https://discuss.leetcode.com/topic/50160/does-anybody-know-the-fastest-java-solution-2ms/6">discuss </a>
  */
+ ///////////////////////////3ms/////////////////////////////////
 public class Leetcode1twoSum {
     // runtime O(N), space depends on value of min, max and target
     public static int[] twoSum(int[] nums, int target) {
@@ -121,4 +122,70 @@ public class Leetcode1twoSum {
         }
         return new int[]{-1, -1}; // -1 as not found, for test
     }
+}
+///////////////////////////2ms/////////////////////////////////
+public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Since x1 + x2 = target, we can in one loop 
+        // mark both x1 and x2 in some additional array where we'll keep indices
+        // Though to build that array we'd need another loop
+        
+        int min=0, max=0;
+        // first loop to find max and min integers
+        for (int i = 0;i<nums.length;i++)
+        {
+            if (i==0)
+            {min = nums[i];max = min;}
+            else
+            {
+                if (nums[i] < min)
+                    min = nums[i];
+                if (nums[i] > max)
+                    max = nums[i];
+            }
+        }
+        // valid range for input integers relative to target
+        int sMin = Math.max(min,target - max);
+        int sMax = Math.min(max,target - min);
+        
+        // array to keep indices of valid input integers
+        // initialize with -1
+        int size = 1 + sMax - sMin;
+        int[] arr = new int[size];
+        for (int i = 0; i< arr.length;i++)
+            arr[i] = -1;
+        
+        // second loop
+        int offset = -sMin;
+        for (int i = 0;i<nums.length;i++)
+        {
+            // Skip if integer is not from a valid range
+            if (nums[i] > sMax || nums[i] < sMin)
+                continue;
+            // if found valid X1 and corresponding element of indices array is still -1
+            // then mark its pair X2 = target - X1 in indices array
+            if (arr[nums[i] + offset] == -1)
+                arr[target-nums[i] + offset] = i;
+            else
+                return new int[]{arr[nums[i] + offset],i};
+        }
+       
+        return new int[]{0,0};
+        
+    }
+}
+
+////////////////////////////////hashmap///////////////////////////
+public int[] twoSum(int[] nums, int target) {
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < nums.length; i++) {
+        map.put(nums[i], i);
+    }
+    for (int i = 0; i < nums.length; i++) {
+        int complement = target - nums[i];
+        if (map.containsKey(complement) && map.get(complement) != i) {
+            return new int[] { i, map.get(complement) };
+        }
+    }
+    throw new IllegalArgumentException("No two sum solution");
 }
